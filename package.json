@@ -1,0 +1,35 @@
+{
+  "name": "paperbox",
+  "version": "1.0.0",
+  "engines": {
+    "node": ">=8.0.0"
+  },
+  "scripts": {
+    "start": "node bin/server.js",
+    "test": "nyc mocha",
+    "cobertura": "node_modules/.bin/istanbul report cobertura"
+  },
+  "description": "mail server for test purpose",
+  "main": "index.js",
+  "author": {
+    "name": "fninemiles",
+    "email": "fninemiles@gmail.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:fninemiles/paperbox.git"
+  },
+  "license": "ISC",
+  "dependencies": {
+    "level": "^6.0.1",
+    "leveldown": "^5.6.0",
+    "mailparser": "^2.7.7",
+    "nedb": "^1.8.0",
+    "smtp-server": "^3.6.0"
+  },
+  "devDependencies": {
+    "mocha": "^7.1.1",
+    "nyc": "^15.0.0",
+    "standard": "^14.3.3"
+  }
+}
