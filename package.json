@@ -22,7 +22,6 @@
   "license": "ISC",
   "dependencies": {
     "level": "^6.0.1",
-    "leveldown": "^5.6.0",
     "mailparser": "^2.7.7",
     "nedb": "^1.8.0",
     "smtp-server": "^3.6.0"
