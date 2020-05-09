@@ -2,12 +2,14 @@
 
 const simpleParser = require('mailparser').simpleParser
 const SMTPServer = require('smtp-server').SMTPServer
+const bunyan = require('bunyan')
 
-function Taotie (options) {
+function Paperbox (options) {
   this.options = {
     dbType: 'ldb',
     dbPath: 'data/mails.db',
     smtpPort: 1025,
+    logger: bunyan.createLogger({name: "paperbox", level: "debug"}),
     users: {
       guest: { password: 'password', user: 65535 },
       nobody: { password: null, user: 65536 }
@@ -17,16 +19,18 @@ function Taotie (options) {
   this.setMailStore()
 }
 
-Taotie.prototype.setMailStore = function () {
+Paperbox.prototype.setMailStore = function () {
   const { dbType, dbPath } = this.options
   const DbClass = require(`./lib/mail_${dbType}.js`)
   this.mailstore = new DbClass(dbPath)
 }
 
-Taotie.prototype.listen = function () {
+Paperbox.prototype.listen = function () {
   const smtpOptions = {
     banner: 'mail server for testing',
     authOptional: true,
+    maxAllowedUnauthenticatedCommands: 100,
+    logger: this.options.logger,
     authMethods: ['CRAM-MD5', 'PLAIN', 'LOGIN'],
     onData: processMailData.bind(this),
     onAuth: authorizeUser.bind(this),
@@ -35,38 +39,38 @@ Taotie.prototype.listen = function () {
   }
   const smtpServer = new SMTPServer(smtpOptions)
   smtpServer.listen(this.options.smtpPort)
-  console.log('SMTP server listening at smtp://127.0.0.1:' + this.options.smtpPort + '/')
+  this.options.logger.info('server started ... ')
 }
 
-Taotie.prototype.addMTAFields = function (mail) {
+Paperbox.prototype.addMTAFields = function (mail) {
   var now = new Date()
   mail.received = now
 }
 
-Taotie.prototype.onMailSaved = function (err, mailId) {
+Paperbox.prototype.onMailSaved = function (err, mailId) {
   if (err) {
-    console.error('ERROR: failed saving mail:', err)
+    this.options.logger.error('ERROR: failed saving mail:', err)
   } else {
-    console.log('mail saved, id:', mailId)
+    this.options.logger.debug('mail saved, id:', mailId)
   }
 }
 
 async function processMailData (stream, session, callback) {
-  console.log('processMailData() - start')
-  console.log('  session = ', session)
+  this.options.logger.debug('processMailData() - start')
+  this.options.logger.debug('  session = ', session)
   var mboxes = session.envelope.rcptTo.map(function (x) { return x.address })
   const parsed = await simpleParser(stream)
   this.addMTAFields(parsed)
   for (var i = 0; i < mboxes.length; i++) {
-    console.log('Save mail to mailbox [' + mboxes[i] + ']')
+    this.options.logger.info('save mail to [' + mboxes[i] + ']')
     this.mailstore.save_mail(mboxes[i], parsed, this.onMailSaved.bind(this))
   }
   callback()
-  console.log('processMailData() - done')
+  this.options.logger.debug('processMailData() - done')
 }
 
 function authorizeUser (auth, session, callback) {
-  console.log('authorizeUser():')
+  this.options.logger.debug('authorizeUser():')
   var err = null
   var result = null
   if (auth.username in this.options.users) {
@@ -86,14 +90,13 @@ function authorizeUser (auth, session, callback) {
   if (!result) {
     err = new Error('Invalid username or password')
   }
-  console.log(`err = ${err}`)
-  console.log(result)
+  this.options.logger.debug(`err = ${err}, result=${result}`)
   callback(err, result)
 }
 
 function validateRcptTo (address, session, callback) {
-  console.log(`validateRcptTo(${address}) ... OK`)
+  this.options.logger.debug(`validateRcptTo(${address.address}, ${address.args}) ... OK`)
   callback()
 }
 
-module.exports = Taotie
+module.exports = Paperbox
