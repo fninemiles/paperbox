@@ -7,7 +7,7 @@
   "scripts": {
     "start": "node bin/server.js",
     "test": "nyc mocha",
-    "cobertura": "node_modules/.bin/istanbul report cobertura"
+    "cobertura": "nyc report --reporter=cobertura"
   },
   "description": "mail server for test purpose",
   "main": "index.js",
