@@ -3,6 +3,7 @@
 const simpleParser = require('mailparser').simpleParser
 const SMTPServer = require('smtp-server').SMTPServer
 const bunyan = require('bunyan')
+const utils = require('./lib/utils')
 
 function Paperbox (options) {
   this.options = {
@@ -11,8 +12,8 @@ function Paperbox (options) {
     smtpPort: 1025,
     logger: bunyan.createLogger({name: "paperbox", level: "debug"}),
     users: {
-      guest: { password: 'password', user: 65535 },
-      nobody: { password: null, user: 65536 }
+      guest: { password: 'password', uid: 65535 },
+      nobody: { password: null, uid: 65536 }
     }
   }
   Object.assign(this.options, options)
@@ -33,7 +34,7 @@ Paperbox.prototype.listen = function () {
     logger: this.options.logger,
     authMethods: ['CRAM-MD5', 'PLAIN', 'LOGIN'],
     onData: processMailData.bind(this),
-    onAuth: authorizeUser.bind(this),
+    onAuth: utils.authorizeUser.bind(this),
     onRcptTo: validateRcptTo.bind(this),
     disabledCommands: ['STARTTLS']
   }
@@ -67,31 +68,6 @@ async function processMailData (stream, session, callback) {
   }
   callback()
   this.options.logger.debug('processMailData() - done')
-}
-
-function authorizeUser (auth, session, callback) {
-  this.options.logger.debug('authorizeUser():')
-  var err = null
-  var result = null
-  if (auth.username in this.options.users) {
-    const { user, password } = this.options.users[auth.username]
-    if (auth.method === 'CRAM-MD5') {
-      if (auth.validatePassword(password)) {
-        result = { user: user }
-      }
-    } else if (auth.method === 'PLAIN') {
-      if (password === auth.password) {
-        result = { user: user }
-      }
-    }
-  } else {
-    result = { user: 65536 } // nobody
-  }
-  if (!result) {
-    err = new Error('Invalid username or password')
-  }
-  this.options.logger.debug(`err = ${err}, result=${result}`)
-  callback(err, result)
 }
 
 function validateRcptTo (address, session, callback) {
