@@ -1,6 +1,6 @@
 {
   "name": "paperbox",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "engines": {
     "node": ">=8.0.0"
   },
@@ -21,15 +21,15 @@
   },
   "license": "ISC",
   "dependencies": {
-    "bunyan": "^1.8.14",
+    "bunyan": "^1.8.15",
     "level": "^6.0.1",
-    "mailparser": "^2.8.1",
+    "mailparser": "^3.1.0",
     "nedb": "^1.8.0",
-    "smtp-server": "^3.7.0"
+    "smtp-server": "^3.8.0"
   },
   "devDependencies": {
-    "mocha": "^7.2.0",
+    "mocha": "^8.3.0",
     "nyc": "^15.1.0",
-    "standard": "^14.3.4"
+    "standard": "^16.0.0"
   }
 }
