@@ -9,6 +9,7 @@ var paperbox = require('paperbox');
 server = new paperbox();
 server.listen();
 ```
+
 ## Choose Mail Store Types
 ### LevelDB
 ```

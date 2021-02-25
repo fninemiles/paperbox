@@ -1,5 +1,6 @@
 /* eslint no-console: ["error", { allow: ["log", "warn", "error"] }] */
 
+const fs = require('fs')
 const simpleParser = require('mailparser').simpleParser
 const SMTPServer = require('smtp-server').SMTPServer
 const bunyan = require('bunyan')
@@ -10,6 +11,9 @@ function Paperbox (options) {
     dbType: 'ldb',
     dbPath: 'data/mails.db',
     smtpPort: 1025,
+    smtpPortTLS: 1465,
+    tlsKey: 'data/key.pem',
+    tlsCert: 'data/cert.pem',
     logger: bunyan.createLogger({name: "paperbox", level: "debug"}),
     users: {
       guest: { password: 'password', uid: 65535 },
@@ -27,7 +31,7 @@ Paperbox.prototype.setMailStore = function () {
 }
 
 Paperbox.prototype.listen = function () {
-  const smtpOptions = {
+  const defaults = {
     banner: 'mail server for testing',
     authOptional: true,
     maxAllowedUnauthenticatedCommands: 100,
@@ -36,10 +40,33 @@ Paperbox.prototype.listen = function () {
     onData: processMailData.bind(this),
     onAuth: utils.authorizeUser.bind(this),
     onRcptTo: validateRcptTo.bind(this),
-    disabledCommands: ['STARTTLS']
   }
-  const smtpServer = new SMTPServer(smtpOptions)
-  smtpServer.listen(this.options.smtpPort)
+  fs.access(this.options.tlsKey, fs.constants.F_OK | fs.constants.R_OK, (err) => {
+    if (err) {
+      this.options.logger.error('Error, unable to access file: %s', this.options.tlsKey)
+    } else {
+      defaults.key = this.options.tlsKey
+    }
+  })
+  fs.access(this.options.tlsCert, fs.constants.F_OK | fs.constants.R_OK, (err) => {
+    if (err) {
+      this.options.logger.error('Error, unable to access file: %s', this.options.tlsCert)
+    } else {
+      defaults.cert = this.options.tlsCert
+    }
+  })
+  if (this.options.smtpPort) {
+    let smtpOpts = Object.assign({}, defaults, {disabledCommands: ['STARTTLS']})
+    let server = new SMTPServer(smtpOpts)
+    server.on('error', handleError.bind(this))
+    server.listen(this.options.smtpPort)
+  }
+  if (this.options.smtpPortTLS) {
+    let smtpOpts = Object.assign({}, defaults, {secure: true})
+    let server = new SMTPServer(smtpOpts)
+    server.on('error', handleError.bind(this))
+    server.listen(this.options.smtpPortTLS)
+  }
   this.options.logger.info('server started ... ')
 }
 
@@ -73,6 +100,10 @@ async function processMailData (stream, session, callback) {
 function validateRcptTo (address, session, callback) {
   this.options.logger.debug(`validateRcptTo(${address.address}, ${address.args}) ... OK`)
   callback()
+}
+
+function handleError(err) {
+  this.options.logger.error('Error %s', err.message)
 }
 
 module.exports = Paperbox

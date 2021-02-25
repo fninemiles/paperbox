@@ -5,10 +5,10 @@ import smtplib
 
 server = "localhost:1025"
 sender = 'from@fromdomain.com'
-receivers = ['to@todomain.com', 'ajones2@janet.iris.com']
+receivers = ['to@todomain.com', 'user2@example.com']
 
 message = """From: From Person <from@fromdomain.com>
-To: To Person <to@todomain.com>, Amy Jones2 <ajones2@janet.iris.com>
+To: To Person <to@todomain.com>, User Two <user2@exmple.com>
 Date: Sun, 31 Jul 2016 02:11:29 -0400 (EDT)
 Subject: SMTP e-mail test blah <b>blah</b>
 
