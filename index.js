@@ -41,22 +41,22 @@ Paperbox.prototype.listen = function () {
     onAuth: utils.authorizeUser.bind(this),
     onRcptTo: validateRcptTo.bind(this),
   }
-  fs.access(this.options.tlsKey, fs.constants.F_OK | fs.constants.R_OK, (err) => {
-    if (err) {
-      this.options.logger.error('Error, unable to access file: %s', this.options.tlsKey)
-    } else {
-      defaults.key = this.options.tlsKey
-    }
-  })
-  fs.access(this.options.tlsCert, fs.constants.F_OK | fs.constants.R_OK, (err) => {
-    if (err) {
-      this.options.logger.error('Error, unable to access file: %s', this.options.tlsCert)
-    } else {
-      defaults.cert = this.options.tlsCert
-    }
-  })
+  try {
+    fs.accessSync(this.options.tlsKey, fs.constants.F_OK | fs.constants.R_OK)
+    this.options.logger.info('Loading SSL key from:', this.options.tlsKey)
+    defaults.key = fs.readFileSync(this.options.tlsKey)
+  } catch (err) {
+    this.options.logger.error('Error, unable to access file: %s', this.options.tlsKey)
+  }
+  try {
+    fs.accessSync(this.options.tlsCert, fs.constants.F_OK | fs.constants.R_OK)
+    this.options.logger.info('Loading SSL cert from:', this.options.tlsCert)
+    defaults.cert = fs.readFileSync(this.options.tlsCert)
+  } catch (err) {
+    this.options.logger.error('Error, unable to access file: %s', this.options.tlsCert)
+  }
   if (this.options.smtpPort) {
-    let smtpOpts = Object.assign({}, defaults, {disabledCommands: ['STARTTLS']})
+    let smtpOpts = Object.assign({}, defaults, {})
     let server = new SMTPServer(smtpOpts)
     server.on('error', handleError.bind(this))
     server.listen(this.options.smtpPort)
