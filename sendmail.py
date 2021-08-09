@@ -23,7 +23,7 @@ try:
     host, port = server.split(':')
     smtpObj = smtplib.SMTP(host, port)
     smtpObj.set_debuglevel(True)
-    smtpObj.login("guest", "password")
+    # smtpObj.login("guest", "password")
     for i in range(10,15):
         receivers.append('user%s@blackbox.test.net' % i)
     smtpObj.sendmail(sender, receivers, message)         
