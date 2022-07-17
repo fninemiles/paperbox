@@ -19,9 +19,9 @@ describe('utils', () => {
     it('picks up certain fields from mail', (done) => {
       const expectedProps = ['_id', 'from', 'to', 'priority', 'received', 'subject', 'date']
       const summarized = utils.summarizeMail(mail)
-      for (var i = 0; i < expectedProps.length; i++) {
-        assert(expectedProps[i] in summarized,
-          `missing properties "${expectedProps[i]}"`)
+      for (const prop of expectedProps) {
+        assert(prop in summarized,
+          `missing properties "${prop}"`)
       }
       done()
     })
@@ -34,12 +34,11 @@ describe('utils', () => {
       password: 'password',
       validatePassword: () => { return true }
     }
-    const session = null
     const server = {
       options: {
         logger: console,
         users: {
-          guest: {uid: 60000, password: 'password' }
+          guest: { uid: 60000, password: 'password' }
         }
       }
     }
@@ -48,15 +47,16 @@ describe('utils', () => {
       auth.method = 'PLAIN'
       const authorizeUser = utils.authorizeUser.bind(server)
       authorizeUser(auth, null, (err, result) => {
+        assert(err === null)
         assert(result.user === 60000)
       })
       done()
     })
-      
+
     it('handles CRAM-MD5 auth of user guest', (done) => {
       auth.method = 'CRAM-MD5'
       const authorizeUser = utils.authorizeUser.bind(server)
-      authorizeUser(auth, null, (err, result) => {
+      authorizeUser(auth, null, (_err, result) => {
         assert(result.user === 60000)
       })
       done()
@@ -65,7 +65,7 @@ describe('utils', () => {
     it('handles LOGIN auth of user guest', (done) => {
       auth.method = 'LOGIN'
       const authorizeUser = utils.authorizeUser.bind(server)
-      authorizeUser(auth, null, (err, result) => {
+      authorizeUser(auth, null, (_err, result) => {
         assert(result.user === 60000)
       })
       done()

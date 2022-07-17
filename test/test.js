@@ -1,14 +1,14 @@
 /* eslint-env mocha */
 
-var assert = require('assert')
-var MailStoreLDB = require('../lib/mail_ldb.js')
-var MailStoreNeDB = require('../lib/mail_nedb.js')
+const assert = require('assert')
+const MailStoreLDB = require('../lib/mail_ldb.js')
+const MailStoreNeDB = require('../lib/mail_nedb.js')
 
 function makeTests (db) {
   describe('Mail Store with ' + db.db_type, function () {
-    var mailDb = db
-    var date = new Date()
-    var mail = {
+    const mailDb = db
+    const date = new Date()
+    const mail = {
       subject: 'Mail subject for unit test',
       from: 'someone@senders.com',
       to: ['recever1@receivers.com', 'receiver2@receivers.com'],
@@ -19,7 +19,7 @@ function makeTests (db) {
 
     describe('#save_mail()', function () {
       it('should save without error', function (done) {
-        var mailbox = 'mailbox1@mail.com'
+        const mailbox = 'mailbox1@mail.com'
         mailDb.save_mail(mailbox, mail, function (err, mailId) {
           assert(!err)
           assert(mailId != null, 'mailId should not be null')
@@ -84,7 +84,7 @@ function makeTests (db) {
       })
 
       it('deletes mail by id', function (done) {
-        var mailbox = 'mailbox1@mail.com'
+        const mailbox = 'mailbox1@mail.com'
         mailDb.save_mail(mailbox, mail, function (err, mailId) {
           assert(!err)
           assert(mailId)
