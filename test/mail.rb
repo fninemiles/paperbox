@@ -31,20 +31,17 @@ MESSAGE_END
 
 end
 
+def make_user
+    name = Faker::Name.name
+    return { name: name, :mail => Faker::Internet.email(name: name) }
+end
 
-users = (1..10).map {
-    name = Faker::Name.name
-    { :mail => Faker::Internet.email(name), :name => name }
-}
-cc_users = (1..5).map {
-    name = Faker::Name.name
-    { :mail => Faker::Internet.email(name), :name => name }
-}
-bcc_users = (1..5).map {
-    name = Faker::Name.name
-    { :mail => Faker::Internet.email(name), :name => name }
-}
-Net::SMTP.start(server, port, 'localhost', 'username', 'password', :plain) do |smtp|
+
+users = (1..10).map { make_user }
+cc_users = (1..5).map { make_user }
+bcc_users = (1..5).map { make_user }
+
+Net::SMTP.start(server, port, 'localhost', 'guest', 'password', :plain) do |smtp|
     1000.times {
         sender = users.sample(1)[0]
         receivers = users.sample(4)
@@ -53,3 +50,4 @@ Net::SMTP.start(server, port, 'localhost', 'username', 'password', :plain) do |s
         smtp.send_message(msg, sender[:mail], receivers.map{|u| u[:mail]})
     }
 end
+

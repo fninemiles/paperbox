@@ -2,7 +2,7 @@
 
 const assert = require('assert')
 const MailStoreLDB = require('../lib/mail_ldb.js')
-const MailStoreNeDB = require('../lib/mail_nedb.js')
+// const MailStoreNeDB = require('../lib/mail_nedb.js')
 
 function makeTests (db) {
   describe('Mail Store with ' + db.db_type, function () {
@@ -57,6 +57,7 @@ function makeTests (db) {
         mailDb.list_mails('mailbox1@mail.com', function (err, mails) {
           assert(!err)
           assert(mails.length > 0)
+          assert(mails[0]._id)
           done()
         })
       })
@@ -104,4 +105,4 @@ function makeTests (db) {
 }
 
 makeTests(new MailStoreLDB('data/test'))
-makeTests(new MailStoreNeDB('data/test'))
+// makeTests(new MailStoreNeDB('data/test'))
