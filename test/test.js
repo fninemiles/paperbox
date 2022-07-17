@@ -24,10 +24,10 @@ function makeTests (db) {
           assert(!err)
           assert(mailId != null, 'mailId should not be null')
           assert(typeof (mailId) === 'string', 'mail id should be string')
-          mailDb.getmail(mailbox, mailId, function (err, savedMail) {
+          mailDb.getmail(mailbox, mailId, function (gmErr, savedMail) {
             assert(savedMail.subject === mail.subject)
             assert(mailId != null)
-            done(err)
+            done(gmErr)
           })
         })
       })
@@ -44,9 +44,15 @@ function makeTests (db) {
     })
 
     describe('#list_mails()', function () {
-      it('should list mails for all mailboxes', function (done) {
-        mailDb.list_mails(null, done)
+      it('should list 0 mails for mailbox null', function (done) {
+        mailDb.list_mails(null, (err, mails) => {
+          done()
+          assert(!err)
+          assert(Array.isArray(mails))
+          assert(mails.length === 0)
+        })
       })
+
       it('should list mails for specific mailbox', function (done) {
         mailDb.list_mails('mailbox1@mail.com', function (err, mails) {
           assert(!err)
