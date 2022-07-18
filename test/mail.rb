@@ -21,11 +21,11 @@ To: #{to}
 Cc: #{cc}
 Bcc: #{bcc}
 Subject: #{Faker::Lorem.sentence}
-Date: #{Faker::Time.backward(14)}
+Date: #{Faker::Time.backward(days: 14)}
 
-#{Faker::Lorem.paragraph(10)}
+#{Faker::Lorem.paragraph(sentence_count: 20)}
 
-#{Faker::Lorem.paragraph(3)}
+#{Faker::Lorem.paragraph(sentence_count: 30)}
 
 MESSAGE_END
 
@@ -41,7 +41,7 @@ users = (1..10).map { make_user }
 cc_users = (1..5).map { make_user }
 bcc_users = (1..5).map { make_user }
 
-Net::SMTP.start(server, port, 'localhost', 'guest', 'password', :plain) do |smtp|
+Net::SMTP.start(server, port, 'localhost', 'guest', 'password', authtype: :plain, tls_verify: false) do |smtp|
     1000.times {
         sender = users.sample(1)[0]
         receivers = users.sample(4)

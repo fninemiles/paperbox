@@ -2,7 +2,6 @@
 
 const assert = require('assert')
 const MailStoreLDB = require('../lib/mail_ldb.js')
-// const MailStoreNeDB = require('../lib/mail_nedb.js')
 
 function makeTests (db) {
   describe('Mail Store with ' + db.db_type, function () {
@@ -105,4 +104,4 @@ function makeTests (db) {
 }
 
 makeTests(new MailStoreLDB('data/test'))
-// makeTests(new MailStoreNeDB('data/test'))
+
