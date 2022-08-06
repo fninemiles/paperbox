@@ -104,4 +104,3 @@ function makeTests (db) {
 }
 
 makeTests(new MailStoreLDB('data/test'))
-
