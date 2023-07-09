@@ -28,6 +28,7 @@
   },
   "license": "ISC",
   "dependencies": {
+    "better-sqlite3": "^8.4.0",
     "bunyan": "^1.8.15",
     "level": "^8.0.0",
     "mailparser": "^3.3.0",

@@ -2,6 +2,7 @@
 
 const assert = require('assert')
 const MailStoreLDB = require('../lib/mail_ldb.js')
+const MailStoreSQLite3 = require('../lib/mail_sqlite3')
 
 function makeTests (db) {
   describe('Mail Store with ' + db.db_type, function () {
@@ -104,3 +105,4 @@ function makeTests (db) {
 }
 
 makeTests(new MailStoreLDB('data/test'))
+makeTests(new MailStoreSQLite3('data/test.sqlite3'))
