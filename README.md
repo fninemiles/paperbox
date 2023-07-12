@@ -15,6 +15,12 @@ server.listen();
 ```
 server = new paperbox({db_type: 'leveldb'});
 ```
+
+### SQLite3
+```
+server = new paperbox({ db_type: 'sqlite3' });
+```
+
 ### NeDB
 ```
 server = new paperbox({db_type: 'nedb'});
