@@ -89,10 +89,7 @@ async function processMailData (stream, session, callback) {
   const mboxes = session.envelope.rcptTo.map(function (x) { return x.address })
   const parsed = await simpleParser(stream)
   this.addMTAFields(parsed)
-  for (let i = 0; i < mboxes.length; i++) {
-    this.options.logger.info('save mail to [' + mboxes[i] + ']')
-    this.mailstore.save_mail(mboxes[i], parsed, this.onMailSaved.bind(this))
-  }
+  this.mailstore.save_mail(mboxes, parsed, this.onMailSaved.bind(this))
   callback()
   this.options.logger.debug('processMailData() - done')
 }

@@ -18,16 +18,36 @@ function makeTests (db) {
     }
 
     describe('#save_mail()', function () {
-      it('should save without error', function (done) {
+      it('save mail to single mailbox without error', function (done) {
         const mailbox = 'mailbox1@mail.com'
         mailDb.save_mail(mailbox, mail, function (err, mailId) {
+          console.log('err=', err)
+          console.log('mailId=', mailId)
           assert(!err)
           assert(mailId != null, 'mailId should not be null')
-          assert(typeof (mailId) === 'string', 'mail id should be string')
-          mailDb.getmail(mailbox, mailId, function (gmErr, savedMail) {
+          assert(typeof mailId === 'string', 'mail id should be string')
+          mailDb.getmail(mailbox, mailId, function (err, savedMail) {
+            // console.log('saved mails:', savedMail)
             assert(savedMail.subject === mail.subject)
             assert(mailId != null)
-            done(gmErr)
+            done(err)
+          })
+        })
+      })
+
+      it('save mail to multiple mailbox without error', function (done) {
+        const mailboxes = ['mailbox2@mail.com', 'mailbox3@mail.com']
+        mailDb.save_mail(mailboxes, mail, function (err, mailId) {
+          // console.log('err=', err)
+          // console.log('mailId=', mailId)
+          assert(!err)
+          assert(mailId != null, 'mailId should not be null')
+          assert(mailId instanceof Array, 'mail id should be Array')
+          mailDb.getmail(mailboxes[1], mailId[1], function (err, savedMail) {
+            // console.log('saved mails:', savedMail)
+            assert(savedMail.subject === mail.subject)
+            assert(mailId != null)
+            done(err)
           })
         })
       })
@@ -36,6 +56,7 @@ function makeTests (db) {
     describe('#count_mails()', function () {
       it('should return the number of mails in give mail box', function (done) {
         mailDb.count_mails('mailbox1@mail.com', function (err, count) {
+          // console.log('err=', err, 'count=', count)
           assert(!err)
           assert(count > 0)
           done()
