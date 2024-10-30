@@ -21,8 +21,8 @@ function makeTests (db) {
       it('save mail to single mailbox without error', function (done) {
         const mailbox = 'mailbox1@mail.com'
         mailDb.save_mail(mailbox, mail, function (err, mailId) {
-          console.log('err=', err)
-          console.log('mailId=', mailId)
+          // console.log('err=', err)
+          // console.log('mailId=', mailId)
           assert(!err)
           assert(mailId != null, 'mailId should not be null')
           assert(typeof mailId === 'string', 'mail id should be string')
@@ -126,4 +126,4 @@ function makeTests (db) {
 }
 
 makeTests(new MailStoreLDB('data/test'))
-makeTests(new MailStoreSQLite3('data/test.sqlite3'))
+makeTests(new MailStoreSQLite3(':memory:'))
