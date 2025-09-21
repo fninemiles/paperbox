@@ -56,13 +56,13 @@ Paperbox.prototype.listen = function () {
     this.options.logger.error('Error, unable to access file: %s', this.options.tlsCert)
   }
   if (this.options.smtpPort) {
-    const smtpOpts = Object.assign({}, defaults, {})
+    const smtpOpts = { ...defaults }
     const server = new SMTPServer(smtpOpts)
     server.on('error', handleError.bind(this))
     server.listen(this.options.smtpPort)
   }
   if (this.options.smtpPortTLS) {
-    const smtpOpts = Object.assign({}, defaults, { secure: true })
+    const smtpOpts = { ...defaults, secure: true }
     const server = new SMTPServer(smtpOpts)
     server.on('error', handleError.bind(this))
     server.listen(this.options.smtpPortTLS)
